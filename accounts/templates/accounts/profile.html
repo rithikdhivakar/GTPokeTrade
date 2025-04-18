@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h2 class="card-title">{{ profile_user.username }}</h2>
+                    <p class="text-muted">Member since {{ profile_user.date_joined|date:"F Y" }}</p>
+                    {% if profile_user == request.user %}
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-dark">Edit Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ profile_user.username }}'s Collection</h5>
+                        {% if profile_user == request.user %}
+                            <div class="search-container" style="width: 200px;">
+                                <input type="text" class="form-control" id="cardSearch" placeholder="Search cards...">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <div class="row" id="cardContainer">
+                        {% for user_card in user_cards %}
+                            <div class="col-md-4 mb-3 card-item" data-card-name="{{ user_card.card.name|lower }}">
+                                <div class="card h-100">
+                                    {% if user_card.card.image_url %}
+                                        <img src="{{ user_card.card.image_url }}" class="card-img-top" alt="{{ user_card.card.name }}" style="max-height: 290px; object-fit: contain; padding: 10px;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ user_card.card.name }}</h6>
+                                        <p class="card-text small">
+                                            <strong>Quantity:</strong> {{ user_card.quantity }}<br>
+                                            <strong>Set:</strong> {{ user_card.card.set_name }}
+                                        </p>
+                                        {% if profile_user == request.user %}
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{% url 'cards:create_listing' card_id=user_card.card.uid %}" class="btn btn-sm btn-outline-dark">List for Sale</a>
+                                                <a href="{% url 'cards:trading' %}" class="btn btn-sm btn-outline-dark">Trade</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12 text-center">
+                                <p class="text-muted">No cards in collection yet.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if profile_user == request.user %}
+<script>
+document.getElementById('cardSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const cards = document.getElementsByClassName('card-item');
+    
+    Array.from(cards).forEach(card => {
+        const cardName = card.getAttribute('data-card-name');
+        card.style.display = cardName.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+</script>
+{% endif %}
+{% endblock %} 

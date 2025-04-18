@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+    <h1 class="mb-4">Marketplace</h1>
+    
+    <div class="row">
+        {% for listing in listings %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    {% if listing.card.image_url %}
+                        <div class="card-img-container">
+                            <img src="{{ listing.card.image_url }}" class="card-img-top" alt="{{ listing.card.name }}">
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.card.name }}</h5>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <i class="fas fa-user"></i>
+                                <a href="{% url 'accounts:profile' user_id=listing.seller.id %}" class="text-decoration-none">{{ listing.seller.username }}</a>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span>${{ listing.price }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-box"></i>
+                                <span>{{ listing.quantity }} available</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-layer-group"></i>
+                                <span>{{ listing.card.set_name }}</span>
+                            </div>
+                        </div>
+                        {% if listing.description %}
+                            <p class="card-description">{{ listing.description }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        {% if listing.seller == request.user %}
+                            <a href="{% url 'cards:my_listings' %}" class="btn btn-outline-dark w-100">Manage Listing</a>
+                        {% elif user.is_authenticated %}
+                            <a href="{% url 'cards:create_listing' card_id=listing.card.uid %}" class="btn btn-dark w-100">Buy Now</a>
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}" class="btn btn-outline-dark w-100">Login to Buy</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No listings available at the moment.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+    <h1 class="mb-4">Trade Details</h1>
+    
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                {% if trade.initiator == request.user %}
+                    Trade with {{ trade.recipient.username }}
+                {% else %}
+                    Trade from {{ trade.initiator.username }}
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Your Cards</h5>
+                    <div class="row">
+                        {% for offer in trade.offers.all %}
+                            {% if offer.user == request.user %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if offer.card.image_url %}
+                                            <img src="{{ offer.card.image_url }}" class="card-img-top" alt="{{ offer.card.name }}" style="max-height: 200px; object-fit: contain; padding: 10px;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ offer.card.name }}</h6>
+                                            <p class="card-text small">
+                                                <strong>Quantity:</strong> {{ offer.quantity }}<br>
+                                                <strong>Set:</strong> {{ offer.card.set_name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5>
+                        {% if trade.initiator == request.user %}
+                            {{ trade.recipient.username }}'s Cards
+                        {% else %}
+                            {{ trade.initiator.username }}'s Cards
+                        {% endif %}
+                    </h5>
+                    <div class="row">
+                        {% for offer in trade.offers.all %}
+                            {% if offer.user != request.user %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if offer.card.image_url %}
+                                            <img src="{{ offer.card.image_url }}" class="card-img-top" alt="{{ offer.card.name }}" style="max-height: 200px; object-fit: contain; padding: 10px;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ offer.card.name }}</h6>
+                                            <p class="card-text small">
+                                                <strong>Quantity:</strong> {{ offer.quantity }}<br>
+                                                <strong>Set:</strong> {{ offer.card.set_name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if trade.message %}
+                <div class="mt-4">
+                    <h5>Message</h5>
+                    <p class="text-muted">{{ trade.message }}</p>
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if trade.recipient == request.user %}
+                        <button type="submit" name="action" value="accept" class="btn btn-success">Accept Trade</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject Trade</button>
+                    {% elif trade.initiator == request.user %}
+                        <button type="submit" name="action" value="cancel" class="btn btn-danger">Cancel Trade</button>
+                    {% endif %}
+                    <a href="{% url 'cards.trading' %}" class="btn btn-outline-dark">Back to Trading</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

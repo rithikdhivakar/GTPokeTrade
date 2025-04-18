@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+    <h1 class="mb-4">Trading</h1>
+    
+    <div class="row">
+        <!-- Search Users Section -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Find Users to Trade With</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+                    </div>
+                    <div class="list-group" id="userList">
+                        {% for user in users %}
+                            <a href="{% url 'cards:create_trade' user_id=user.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ user.username }}</h6>
+                                    <small class="text-muted">{{ user.date_joined|date:"M d, Y" }}</small>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Trades Section -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Pending Trades</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_trades %}
+                        <div class="list-group">
+                            {% for trade in pending_trades %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            {% if trade.initiator == request.user %}
+                                                Trade with {{ trade.recipient.username }}
+                                            {% else %}
+                                                Trade from {{ trade.initiator.username }}
+                                            {% endif %}
+                                        </h6>
+                                        <small class="text-muted">{{ trade.created_at|date:"M d, Y H:i" }}</small>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><strong>Your Cards:</strong></p>
+                                            <ul class="list-unstyled">
+                                                {% for offer in trade.offers.all %}
+                                                    {% if offer.user == request.user %}
+                                                        <li>{{ offer.quantity }}x {{ offer.card.name }}</li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><strong>Their Cards:</strong></p>
+                                            <ul class="list-unstyled">
+                                                {% for offer in trade.offers.all %}
+                                                    {% if offer.user != request.user %}
+                                                        <li>{{ offer.quantity }}x {{ offer.card.name }}</li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% if trade.message %}
+                                        <p class="mb-1"><small class="text-muted">Message: {{ trade.message }}</small></p>
+                                    {% endif %}
+                                    <div class="mt-2">
+                                        <a href="{% url 'cards:respond_to_trade' trade_id=trade.id %}" class="btn btn-sm btn-outline-dark">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center">No pending trades.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('userSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const userList = document.getElementById('userList');
+    const users = userList.getElementsByClassName('list-group-item');
+    
+    Array.from(users).forEach(user => {
+        const username = user.querySelector('h6').textContent.toLowerCase();
+        user.style.display = username.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %} 

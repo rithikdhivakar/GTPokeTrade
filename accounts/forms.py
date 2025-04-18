@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
 from django import  forms
+
 class CustomErrorList(ErrorList):
     def __str__(self):
         if not self:
@@ -11,14 +12,26 @@ class CustomErrorList(ErrorList):
             f'<div class="alert alert-danger" role="alert"> {e}</div>' for e in self]))
 
 class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
 
-    email = forms.EmailField( max_length= 256)
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
 
-    def __init__(self, *args, **kwargs):
-        super(CustomUserCreationForm, self).__init__ (*args, **kwargs)
-        for fieldname in ['email' ,'username', 'password1',
-        'password2']:
-            self.fields[fieldname].help_text = None
-            self.fields[fieldname].widget.attrs.update(
-                {'class': 'form-control'}
-            )
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }

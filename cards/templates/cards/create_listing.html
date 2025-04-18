@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">List {{ card.name }} for Sale</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            {% if card.image_url %}
+                                <img src="{{ card.image_url }}" class="img-fluid rounded" alt="{{ card.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h5>Card Details</h5>
+                            <p>
+                                <strong>Set:</strong> {{ card.set_name }}<br>
+                                <strong>Type:</strong> {{ card.pokemon_type }}<br>
+                                <strong>HP:</strong> {{ card.hp }}<br>
+                                <strong>Your Quantity:</strong> {{ user_card.quantity }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity to List</label>
+                            {{ form.quantity }}
+                            {% if form.quantity.errors %}
+                                <div class="alert alert-danger">{{ form.quantity.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price per Card ($)</label>
+                            {{ form.price }}
+                            {% if form.price.errors %}
+                                <div class="alert alert-danger">{{ form.price.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description (Optional)</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="alert alert-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark">Create Listing</button>
+                            <a href="{% url 'accounts.profile' %}" class="btn btn-outline-dark">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

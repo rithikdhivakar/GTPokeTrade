@@ -1,20 +1,121 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<header class="masthead bg-index text-white text-center
-           py-4">
-  <div class="container d-flex align-items-center flex-
-  column pt-2">
-    <h2>Poke Trade</h2>
-    <p>Your Ticket to Unlimited Trading Fun!</p>
-  </div>
-</header>
-<div class="p-3">
-  <div class="container">
-    <div class="row mt-3">
-      <div class="col mx-auto text-center mb-3">
-        <h4>Welcome to the best Pokemon Trading App!</h4>
-      </div>
+<!-- Hero Section -->
+<section class="hero-section py-5 bg-dark text-white" style="background: url('{% static 'img/new_background.jpg' %}') no-repeat center center; background-size: cover;">
+    <div class="container">
+        <div class="row min-vh-20 flex-column justify-content-end">
+            <div class="col-lg-6 ms-auto hero-content text-end">
+                <h1 class="display-4 fw-bold mb-4">Welcome to PokeTrade</h1>
+                <p class="lead mb-4">Your premier destination for trading Pokémon cards. Build your collection, connect with trainers worldwide, and discover rare cards!</p>
+                {% if not user.is_authenticated %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'accounts:signup' %}" class="btn btn-light btn-lg px-4 me-md-2">Get Started</a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg px-4">Login</a>
+                    </div>
+                {% else %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'cards:marketplace' %}" class="btn btn-light btn-lg px-4 me-md-2">Browse Marketplace</a>
+                        <a href="{% url 'cards:trading' %}" class="btn btn-outline-light btn-lg px-4">Start Trading</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-{% endblock content %}
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose PokeTrade?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exchange-alt fa-3x mb-3 text-primary"></i>
+                        <h3 class="h5">Easy Trading</h3>
+                        <p class="text-muted">Connect with trainers worldwide and trade your cards with our intuitive trading system.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-store fa-3x mb-3 text-primary"></i>
+                        <h3 class="h5">Marketplace</h3>
+                        <p class="text-muted">Buy and sell cards in our secure marketplace with competitive pricing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-gift fa-3x mb-3 text-primary"></i>
+                        <h3 class="h5">Daily Rewards</h3>
+                        <p class="text-muted">Get a free card every day just for logging in and expand your collection!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">1</h3>
+                    </div>
+                    <h4>Create Account</h4>
+                    <p class="text-muted">Sign up and get your first free card</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">2</h3>
+                    </div>
+                    <h4>Build Collection</h4>
+                    <p class="text-muted">Collect cards through trading and daily rewards</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">3</h3>
+                    </div>
+                    <h4>Start Trading</h4>
+                    <p class="text-muted">Connect with other trainers and trade cards</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <h3 class="mb-0">4</h4>
+                    </div>
+                    <h4>Sell Cards</h4>
+                    <p class="text-muted">List your cards for sale in the marketplace</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Start Your Trading Journey?</h2>
+        <p class="lead mb-4">Join thousands of trainers in building their ultimate Pokémon card collection.</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'accounts:signup' %}" class="btn btn-light btn-lg px-5">Sign Up Now</a>
+        {% else %}
+            <a href="{% url 'cards:marketplace' %}" class="btn btn-light btn-lg px-5">Browse Cards</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

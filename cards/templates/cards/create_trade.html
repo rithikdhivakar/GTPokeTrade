@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+    <h1 class="mb-4">Create Trade with {{ recipient.username }}</h1>
+    
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Select Cards to Trade</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Your Cards</h5>
+                        <div class="row">
+                            {% for user_card in initiator_cards %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if user_card.card.image_url %}
+                                            <img src="{{ user_card.card.image_url }}" class="card-img-top" alt="{{ user_card.card.name }}" style="max-height: 200px; object-fit: contain; padding: 10px;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ user_card.card.name }}</h6>
+                                            <p class="card-text small">
+                                                <strong>Quantity:</strong> {{ user_card.quantity }}<br>
+                                                <strong>Set:</strong> {{ user_card.card.set_name }}
+                                            </p>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" name="initiator_card_{{ user_card.card.uid }}" 
+                                                       min="0" max="{{ user_card.quantity }}" value="0">
+                                                <span class="input-group-text">/ {{ user_card.quantity }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>{{ recipient.username }}'s Cards</h5>
+                        <div class="row">
+                            {% for user_card in recipient_cards %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if user_card.card.image_url %}
+                                            <img src="{{ user_card.card.image_url }}" class="card-img-top" alt="{{ user_card.card.name }}" style="max-height: 200px; object-fit: contain; padding: 10px;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ user_card.card.name }}</h6>
+                                            <p class="card-text small">
+                                                <strong>Quantity:</strong> {{ user_card.quantity }}<br>
+                                                <strong>Set:</strong> {{ user_card.card.set_name }}
+                                            </p>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" name="recipient_card_{{ user_card.card.uid }}" 
+                                                       min="0" max="{{ user_card.quantity }}" value="0">
+                                                <span class="input-group-text">/ {{ user_card.quantity }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message (Optional)</label>
+                    <textarea class="form-control" id="message" name="message" rows="3" 
+                              placeholder="Add a message to your trade offer..."></textarea>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-dark">Send Trade Offer</button>
+                    <a href="{% url 'cards.trading' %}" class="btn btn-outline-dark">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
