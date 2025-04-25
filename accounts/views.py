@@ -30,7 +30,7 @@ def signup(request):
             else:
                 messages.success(request, 'Account created successfully!')
             
-            return redirect('home.index')
+            return redirect('/')
     else:
         form = CustomUserCreationForm()
     
