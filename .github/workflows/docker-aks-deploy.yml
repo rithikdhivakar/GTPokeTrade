@@ -8,6 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # 1) Declare that this job will output a value called "image"
+    # Hello
     outputs:
       image: ${{ steps.build-image.outputs.image }}
 
