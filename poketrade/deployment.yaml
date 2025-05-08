@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poketrade
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poketrade
+  template:
+    metadata:
+      labels:
+        app: poketrade
+    spec:
+      containers:
+      - name: poketrade
+        image: gtpoketradeacr7131.azurecr.io/poketrade-prg:latest
+        ports:
+        - containerPort: 8000

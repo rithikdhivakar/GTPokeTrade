@@ -1,0 +1,52 @@
+name: Build & Deploy to AKS
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_NAME }}.azurecr.io
+          username:    ${{ secrets.ACR_NAME }}
+          password:    ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build & push image
+        working-directory: poketrade
+        run: |
+          IMAGE=${{ secrets.ACR_NAME }}.azurecr.io/poketrade:${{ github.sha }}
+          docker build -t $IMAGE .
+          docker push $IMAGE
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure kubectl context
+        uses: azure/aks-set-context@v1
+        with:
+          creds:          ${{ secrets.AZURE_CREDENTIALS }}
+          cluster-name:   ${{ secrets.AKS_CLUSTER_NAME }}
+          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      - name: Deploy new image
+        run: |
+          kubectl set image deployment/poketrade poketrade=${{ env.IMAGE }} --namespace default
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/poketrade --namespace default
