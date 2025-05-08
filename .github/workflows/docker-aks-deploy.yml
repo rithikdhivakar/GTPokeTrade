@@ -42,22 +42,20 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Configure kubectl context
         uses: azure/aks-set-context@v1
         with:
-          creds:          ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name:   ${{ secrets.AKS_CLUSTER_NAME }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
 
-      # 3) Consume the job output:
-      - name: Deploy new image
+      - name: Deploy Deployment & Service
         run: |
-          kubectl set image \
-            deployment/poketrade \
-            poketrade=${{ needs.build.outputs.image }} \
-            --namespace default
+          kubectl apply -f poketrade/deployment.yaml
+          kubectl apply -f poketrade/service.yaml
 
       - name: Wait for rollout
         run: |
