@@ -27,7 +27,7 @@ jobs:
           username:    ${{ secrets.ACR_NAME }}
           password:    ${{ secrets.ACR_PASSWORD }}
 
-      # 2) Build & push – and set the output
+      # 2) Build & push
       - name: Build & push image
         id: build-image                   # <- give this step an ID
         working-directory: poketrade
